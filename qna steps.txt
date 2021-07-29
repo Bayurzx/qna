@@ -1,0 +1,13 @@
+laravel new qna
+
+npm cache verify // for some npm install error
+
+npm install
+
+// install this for auth
+composer require laravel/ui 	
+php artisan ui vue --auth  
+
+// running mysql on wsl2
+sudo /etc/init.d/mysql start
+sudo mysql
