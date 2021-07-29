@@ -11,3 +11,12 @@ php artisan ui vue --auth
 // running mysql on wsl2
 sudo /etc/init.d/mysql start
 sudo mysql
+
+// on windows, creating a database with mysql
+mysql -u root -e "CREATE DATABASE qna;"
+
+// chckout to a new branch
+git checkout -b newModel
+
+// create model along with migration by specifying -m or --migration
+php artisan make:model Question -m
