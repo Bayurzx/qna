@@ -7,8 +7,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-use Illuminate\Support\Str;
-
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
@@ -36,12 +34,6 @@ class User extends Authenticatable
 
     public function questions() {
         return $this->hasMany(Question::class);
-    }
-
-    public function setTitleAttribute($value)
-    {
-        $this->attributes['title'] = $value;
-        $this->attributes['slug'] = Str::slug($value);
     }
 
     /**

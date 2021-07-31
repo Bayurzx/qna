@@ -35,4 +35,18 @@ sudo mysql
 ```php artisan migrate:fresh```
 
 - Learn a little about `namespace` and `use`, use helps import laravel libraries which are used as a function in some parts of `app\Models\User.php` and `app\Models\Question.php`
-    - I imported `Str` to use for the slug function in `app\Models\User.php`
+    - I imported `Str` to use for the slug function in `app\Models\User.php` instead of str_slug()
+
+- Experimenting with `sentence` in tinker
+  ```
+  >>> $faker = Faker\Factory::create();
+  >>> $faker->sentence()
+  >>> rtrim($faker->sentence(),".")
+  >>> $faker->paragraphs()
+  >>> $faker->paragraphs(3, true)
+  ```
+  
+- Inserting `3` records with factory in tinker
+  `>>> \App\Models\User::factory(3)->create();`
+
+- I used `\App\Models\Question::factory(rand(1,5))->make()` instead of `factory(App\Question::class, rand(1,5))->make()`
