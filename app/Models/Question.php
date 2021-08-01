@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 
 class Question extends Model
 {
-    // use HasFactory;
+    use HasFactory;
 
     protected $fillable = ['title', 'body'];
 
