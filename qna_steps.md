@@ -50,3 +50,8 @@ sudo mysql
   `>>> \App\Models\User::factory(3)->create();`
 
 - I used `\App\Models\Question::factory(rand(1,5))->make()` instead of `factory(App\Question::class, rand(1,5))->make()`
+
+- Populated the qna db bby using 
+  `php artisan migrate:fresh --seed`
+
+  
