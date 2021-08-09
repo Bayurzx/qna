@@ -38,7 +38,7 @@ sudo mysql
 - Learn a little about `namespace` and `use`, use helps import laravel libraries which are used as a function in some parts of `app\Models\User.php` and `app\Models\Question.php`
     - I imported `Str` to use for the slug function in `app\Models\User.php` instead of str_slug()
 
-### **Lesson 5. Generating Fake data via Model Factories 1 & 2**
+## **Lesson 5. Generating Fake data via Model Factories 1 & 2**
 
 - Experimenting with `sentence` in tinker
   ```
@@ -66,7 +66,7 @@ sudo mysql
   - `paragraphs()` takes a 2nd args of true to indicate string instead of array
 
 
-### **Lesson 7. Displaying all questions**
+## **Lesson 7. Displaying all questions**
 
 - Created new route in `routes\web.php`
 
@@ -94,5 +94,19 @@ $questions = Question::latest()->paginate(3);
 return view('questions.index', compact('questions'));
 ```
 
-- Customise pagination view generated from function with
-    php artisan vendor:publish --tag=laravel-pagination
+- Customise pagination view(`{{ $questions->links() }}`) generated from `Question::latest()->paginate(3)` function with:
+
+      php artisan vendor:publish --tag=laravel-pagination
+
+
+##  Lesson 8. Adding Author info and Question creation date on Question item
+
+- We created created_date method for question(`app\Models\Question.php`) to be used in the blade. We also createed one for url but it's empty for now
+
+- We fixed the `N+1 query problem` by using the `with('user')` method in `app\Http\Controllers\QuestionsController.php:18,32`.
+  - This issue causes lazy loading as seen when multiple calls are made to the DB after dumping with `dd`.
+  - Make sure you are able to debug with `dd()` by installing...
+
+        composer require barryvdh/laravel-debugbar --dev
+
+##  Lesson 10. Adding votes, answers and views counter on Question item 
