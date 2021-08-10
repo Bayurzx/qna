@@ -110,3 +110,39 @@ return view('questions.index', compact('questions'));
         composer require barryvdh/laravel-debugbar --dev
 
 ##  Lesson 10. Adding votes, answers and views counter on Question item 
+- Passed the values for status view and vote in question/index blade. 
+- We used `scss` for styling, and compiled it before it could work with `npm run dev`. 
+- You can check this at `webpack.mix.js` file. It shows the location the files compiled to
+- Run `npm run watch` to automatically compile
+
+##  Lesson 11. Adding votes, answers and views counter on Question item
+- Did some styling learnt about scss, defining variables and using child properties in styling
+- Made the answer class dynamic
+
+##  Lesson 12. Buiding Question Form 
+- Created the ask question link 
+- You can serach all available route with `php artisan route:list --name=question` The name question helps to limit the search
+
+
+##  Lesson 13. Buiding Question Form - Part 2  
+- We will be using the `$errors` variable which is automatically defined in view blade.
+- If the submit button is clicked at this stage, you get a expired error msg `419`
+  - This is as a result of csrf not being defined. You can fix this by simply adding the `@csrf` directly below the `<form>` tag
+  - The @ operator tells PHP to suppress error messages, so that they will not be shown. `<Sometimes a Bad Practice>`
+
+
+
+## Lesson 14. Validating and Saving the Question
+- To generate our form request function, we run...
+
+      php artisan make:request AskQuestionRequest
+
+  - This creates a php function file called `AskQuestionRequest` that contains two functions called `authorize()` and `rules()` `App\Http\Requests\AskQuestionRequest`
+
+- We used the function `old()` to temporary persist our form data value if the submit fails. It's a method from the request function
+
+## Lesson 15. Validating and Saving the Question 
+- In the questionsController, we edited the store function to help us create questions with the form
+  - After creating the question, we redirect to the quesiton route
+- We create the a success message stored in the session.
+  - The html is stored in the `_message.blade.php`
