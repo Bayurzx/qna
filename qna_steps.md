@@ -234,12 +234,12 @@ Route::get('/questions/{slug}', [App\Http\Controllers\QuestionsController::class
   ``` php
    $this->authorize('update', $question);
   ```
-  - Note that `'update'` is the function name from `QuestionPolicy.php`
+  - Note that `'update'` is the function name from `Questgit add ionPolicy.php`
   - We also didn't need to specify the user instance, because laravel would recognise from behind the scene.
-- We define a _constructor function in the QuestionCOntroller class that will run first (what `_constructor` do) with the exception of the `index` and `show`
+- We define a _constructor function in the QuestionCOntroller class that will run first (what `__constructor` do) with the exception of the `index` and `show`
 
 ``` php
-    public function _construct()
+    public function __construct()
     {
         $this->middleware('auth', ['except' => ['index', 'show']]);
     }
