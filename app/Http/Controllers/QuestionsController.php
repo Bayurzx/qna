@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\Gate;
 
 class QuestionsController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth', ['except' => ['index', 'show']]);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -75,13 +80,10 @@ class QuestionsController extends Controller
      */
     public function edit(Question $question)
     {
-        if (Gate::allows('update-question', $question)) {
-            return view('questions.edit', compact('question'));
-        } else {
-            abort(403, "You are not allowed to edit");
-        }
+        $this->authorize('update', $question);
+        return view('questions.edit', compact('question'));
     }
-
+    
     /**
      * Update the specified resource in storage.
      *
@@ -91,15 +93,13 @@ class QuestionsController extends Controller
      */
     public function update(AskQuestionRequest $request, Question $question)
     {
-        if (Gate::denies('update-question', $question)) {
-            abort(403, "You are not allowed to update");
-        } 
-
+        
+        $this->authorize('update', $question);
         $question->update($request->only('title', 'body'));
-
+        
         return redirect('/questions')->with('success', 'Your question has been updated!');
     }
-
+    
     /**
      * Remove the specified resource from storage.
      *
@@ -108,10 +108,8 @@ class QuestionsController extends Controller
      */
     public function destroy(Question $question)
     {
-        if (Gate::denies('delete-question', $question)) {
-            abort(403, "You are not allowed to delete");
-        } 
-
+        
+        $this->authorize('delete', $question);
         $question->delete();
 
         return redirect('/questions')->with('success', "Your question has been deleted!");

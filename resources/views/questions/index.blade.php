@@ -24,11 +24,11 @@
                             <div class="media-body">
                                 <div class="d-flex align-items-center">
                                     <h3 class="mt-0"><a href="{{ $question->url }}">{{ $question->title }}</a></h3>
-                                    @if (Auth::user()->can('update-question', $question))
+                                    @can('update', $question)
                                         <div class="ml-auto pr-2"><a href="{{ route('questions.edit', $question->id) }}" class="btn btn-sm btn-outline-info">Edit</a></div>
-                                    @endif
+                                    @endcan
 
-                                    @if (Auth::user()->can('delete-question', $question))
+                                    @can('delete', $question)
                                         <form action="{{route('questions.destroy', $question->id)}} " method="post">
                                             @method('DELETE')
                                             @csrf
@@ -36,7 +36,7 @@
                                                 Delete
                                             </button>
                                         </form>
-                                    @endif
+                                    @endcan
                                 </div>
                                 <p class="lead">
                                     Asked by

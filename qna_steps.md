@@ -221,12 +221,27 @@ Route::get('/questions/{slug}', [App\Http\Controllers\QuestionsController::class
   php artisan make:policy QuestionPolicy --model=Question
   ```
 
-- You can add this line to check if the user created the question and if it doesn't have any answer yet
+- You can add this line to `app\Policies\QuestionPolicy.php` to check if the user created the question and if it doesn't have any answer yet
 ``` bash
   return $user->id == $question->user_id && $question->answers < 1;
 ```
 
 - Next, register the policy by mapping the model to it's respective policy
-  ``` php
+  ``` php (app\Providers\AuthServiceProvider.php)
   Question::class => QuestionPolicy::class,
   ```
+- Then, we can specify which policy function from QuestionPolicy.php we wanna authorize in QuestionController
+  ``` php
+   $this->authorize('update', $question);
+  ```
+  - Note that `'update'` is the function name from `QuestionPolicy.php`
+  - We also didn't need to specify the user instance, because laravel would recognise from behind the scene.
+- We define a _constructor function in the QuestionCOntroller class that will run first (what `_constructor` do) with the exception of the `index` and `show`
+
+``` php
+    public function _construct()
+    {
+        $this->middleware('auth', ['except' => ['index', 'show']]);
+    }
+
+```
