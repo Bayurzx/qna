@@ -146,3 +146,61 @@ return view('questions.index', compact('questions'));
   - After creating the question, we redirect to the quesiton route
 - We create the a success message stored in the session.
   - The html is stored in the `_message.blade.php`
+  - We include it in our `index.blade`
+
+## Lesson 16. Updating The Question 
+- Edited the `edit` funciton in QuestionsController.
+- Moved a section of our form to layout and made the submit button dynamic
+
+## Lesson 17. Updating The Question - Part 2 
+- I used the `@method('PUT')` or `method_field('PUT')` function in the form body to enable `PUT` method since forms only support `POST` and `GET`
+
+## Lesson 18. Deleting The Question - Part 2 
+- I used the `@method('DELETE')` or `method_field('DELETE')` function in the form body to enable `DELETE` method since forms only support `POST` and `GET`
+- We simply wrapped a form around the button to delete.
+
+
+## Lesson 19. Showing The Question detail
+- We need to show the question, but we also need to change the url from it's default as seen after running...
+  
+```
+
+.../qna>>> php artisan route:list --name=questions
+
+
++--------+-----------+---------------------------+-------------------+--------------------------------------------------+------------+
+| Domain | Method    | URI                       | Name              | Action                                           | Middleware |
++--------+-----------+---------------------------+-------------------+--------------------------------------------------+------------+
+|        | GET|HEAD  | questions                 | questions.index   | App\Http\Controllers\QuestionsController@index   | web        |
+|        | POST      | questions                 | questions.store   | App\Http\Controllers\QuestionsController@store   | web        |
+|        | GET|HEAD  | questions/create          | questions.create  | App\Http\Controllers\QuestionsController@create  | web        |
+|        | GET|HEAD  | questions/{question}      | questions.show    | App\Http\Controllers\QuestionsController@show    | web        |
+|        | PUT|PATCH | questions/{question}      | questions.update  | App\Http\Controllers\QuestionsController@update  | web        |
+|        | DELETE    | questions/{question}      | questions.destroy | App\Http\Controllers\QuestionsController@destroy | web        |
+|        | GET|HEAD  | questions/{question}/edit | questions.edit    | App\Http\Controllers\QuestionsController@edit    | web        |
++--------+-----------+---------------------------+-------------------+--------------------------------------------------+------------+
+```
+
+- `questions.show` needs a new url
+- We do this by excluding the sub-route in our resource route in `routes\web.php`
+```
+Route::resource('questions', QuestionsController::class)->except('show');
+Route::get('/questions/{slug}', [App\Http\Controllers\QuestionsController::class, 'show'])->name('questions.show');
+```
+- **Note:** that `Route::get('questions/{slug}', "QuestionsController@show")->name('questions.show');
+` wont work.
+
+- We need to define our own model binding resolution logic by adding `Route::bind` to `boot()` in `app\Providers\RouteServiceProvider.php`
+  - Read about it here -> [Customizing The Resolution Logic](https://laravel.com/docs/8.x/routing#customizing-the-resolution-logic)
+
+- Changed the 2nd `route()` argument from `$this->id` to `$this->slug` in `app\Models\Question.php`
+
+- We add more logic to QuestionController@show
+  - First, we increment views in the db 
+  - then, we return the page to the blade
+
+- Install the `parsedown` with `composer require parsedown/laravel`
+- You can free parse markup or markdown text with 
+  - `{!! $question->body_html !!}` in the blade
+  - ` \Parsedown::instance()->text($this->body);` in `app\Models\Question.php`
+- 
