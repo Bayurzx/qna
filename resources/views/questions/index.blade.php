@@ -24,14 +24,19 @@
                             <div class="media-body">
                                 <div class="d-flex align-items-center">
                                     <h3 class="mt-0"><a href="{{ $question->url }}">{{ $question->title }}</a></h3>
-                                    <div class="ml-auto pr-2"><a href="{{ route('questions.edit', $question->id) }}" class="btn btn-sm btn-outline-info">Edit</a></div>
-                                    <form action="{{route('questions.destroy', $question->id)}} " method="post">
-                                        @method('DELETE')
-                                        @csrf
-                                        <button type="submit" onclick="return confirm('Are you sure?') " class="btn btn-sm btn-outline-danger">
-                                            Delete
-                                        </button>
-                                    </form>
+                                    @if (Auth::user()->can('update-question', $question))
+                                        <div class="ml-auto pr-2"><a href="{{ route('questions.edit', $question->id) }}" class="btn btn-sm btn-outline-info">Edit</a></div>
+                                    @endif
+
+                                    @if (Auth::user()->can('delete-question', $question))
+                                        <form action="{{route('questions.destroy', $question->id)}} " method="post">
+                                            @method('DELETE')
+                                            @csrf
+                                            <button type="submit" onclick="return confirm('Are you sure?') " class="btn btn-sm btn-outline-danger">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    @endif
                                 </div>
                                 <p class="lead">
                                     Asked by

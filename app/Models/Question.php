@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Support\Str;
+use \Parsedown;
 
 class Question extends Model
 {
@@ -46,7 +47,7 @@ class Question extends Model
 
     public function getBodyHtmlAttribute()
     {
-        return \Parsedown::instance()->text($this->body);
+        return Parsedown::instance()->text($this->body);
     }
 
 }
