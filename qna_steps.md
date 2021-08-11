@@ -41,7 +41,7 @@ sudo mysql
 ## **Lesson 5. Generating Fake data via Model Factories 1 & 2**
 
 - Experimenting with `sentence` in tinker
-  ```
+  ``` bash
   >>> $faker = Faker\Factory::create();
   >>> $faker->sentence()
   >>> rtrim($faker->sentence(),".")
@@ -88,7 +88,7 @@ sudo mysql
     - destory
 
 - Create variable to hold questions and use the paginate(5 questions) method and return **questions** variable questions view(resources\views\questions)
-```
+``` php
 $questions = Question::latest()->paginate(3);
 
 return view('questions.index', compact('questions'));
@@ -183,7 +183,7 @@ return view('questions.index', compact('questions'));
 
 - `questions.show` needs a new url
 - We do this by excluding the sub-route in our resource route in `routes\web.php`
-```
+``` php
 Route::resource('questions', QuestionsController::class)->except('show');
 Route::get('/questions/{slug}', [App\Http\Controllers\QuestionsController::class, 'show'])->name('questions.show');
 ```
@@ -203,4 +203,30 @@ Route::get('/questions/{slug}', [App\Http\Controllers\QuestionsController::class
 - You can free parse markup or markdown text with 
   - `{!! $question->body_html !!}` in the blade
   - ` \Parsedown::instance()->text($this->body);` in `app\Models\Question.php`
-- 
+
+## Lesson 20. Authorizing The Question - Using Gates
+- `use Illuminate\Support\Facades\Gate;` in your `app\Providers\AuthServiceProvider.php` file
+- Define gates for update and delete question
+  - You can use `Gate::denies` or `Gate::allows` I used both occurence
+- Added the `Auth::user` method to hide button in index.blade
+``` php
+@if (Auth::user()->can('update-question', $question))
+  // ... code
+@endif
+```
+
+## Lesson 21. Authorizing The Question - Using Policies
+- Create our policy class with
+  ``` bash
+  php artisan make:policy QuestionPolicy --model=Question
+  ```
+
+- You can add this line to check if the user created the question and if it doesn't have any answer yet
+``` bash
+  return $user->id == $question->user_id && $question->answers < 1;
+```
+
+- Next, register the policy by mapping the model to it's respective policy
+  ``` php
+  Question::class => QuestionPolicy::class,
+  ```
