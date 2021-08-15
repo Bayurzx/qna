@@ -54,7 +54,7 @@ sudo mysql
 
 - I used `\App\Models\Question::factory(rand(1,5))->make()` instead of `factory(App\Question::class, rand(1,5))->make()`
 ## Note:
-    `factory()->create()` method will insert record to database while  `factory()->make()`generate reord and store to memory
+    `factory()->create()` method will insert record to database while  `factory()->make()`generate record and store to memory
 
 - Populated the qna `mysql db` with fake data by using logic written in database\factories through database seeder.
   - Note that definition() was used instead of define in the UserFactory file (laravel 8)
@@ -245,3 +245,66 @@ Route::get('/questions/{slug}', [App\Http\Controllers\QuestionsController::class
     }
 
 ```
+
+## Lesson 22. Designing Answer Schema
+- First, create the answer model with `php artisan make:model Answer -m`
+  - -m, --migration => Create a new migration file for the model.
+  - -c, --controller Create a new controller for the model.
+  - -r, --resource Indicates if the generated controller should be a resource controller
+- Second, update your schema in up() function in `database\migrations\2021_08_11_230401_create_answers_table.php`
+ 
+ ``` php
+    public function up()
+    {
+        Schema::create('answers', function (Blueprint $table) {
+            $table->increments('id');
+            $table->unsignedInteger('question_id');
+            $table->unsignedInteger('user_id');
+            $table->text('body');
+            $table->integer('votes_count')->default(0);
+            $table->timestamps();
+        });
+    }
+```
+- Third, migrate your schema to your db from the schema updated.
+  `php artisan migrate`
+
+- Fourth, create a relationship of from Question model to Answer model with ...
+  ``` php
+    public function answers()
+    {
+        $this->hasMany(Answer::class); //take note of hasMany()
+    }
+  ``` 
+  - Do the same with `User` model
+
+- Fifth, create a relationship of from Answer model to Question model with ...
+  ``` php
+    public function question()
+    {
+        return $this->belongsTo(Question::class) //take not of belongsTo
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+  ``` 
+  - Notice that this funciton is recieving from User and Question Models
+
+- Rename the `answers` table to `answers_count`.
+  - This is needed because...
+  - Create a new migration with `php artisan make:migration rename_answers_in_questions_table --table=questions`
+  - Add the following to the up function `$table->renameColumn('answers', 'answers_count');` to change the column name.
+  - install `doctrine/dbal` with `composer require doctrine/dbal`
+  - run `php artisan migrate`
+
+## Lesson 23. Generating Fake Answers 
+- Create the answer factory with `php artisan make:factory AnswerFactory`
+- we do the same with QuestionFactory with AnswerFactory
+- use `DB::table('students')->pluck('name');` instead of `App/User::pluck('id');`
+- linked users->questions->answers in DatabaseSeeder
+- Increment answers from `boot()` as shown in `app\Models\Answer.php`
+  - I didn't use `$answer->question->save()` because increment automaticalaly does that
+  - Also commented out `'answers_count' => rand(0,10),` in `database\factories\QuestionFactory.php` sincec its now done automatically
+- Rerun the migration (fresh seed)
