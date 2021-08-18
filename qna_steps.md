@@ -308,3 +308,17 @@ Route::get('/questions/{slug}', [App\Http\Controllers\QuestionsController::class
   - I didn't use `$answer->question->save()` because increment automaticalaly does that
   - Also commented out `'answers_count' => rand(0,10),` in `database\factories\QuestionFactory.php` sincec its now done automatically
 - Rerun the migration (fresh seed)
+
+## Lesson 25. Displaying answers for question
+- Added answers to show-blade.
+- Added `getAvatarAttribute()` to user.php
+  - We removed `$default` and `d` from the url query string
+  - Go to [gravatar](https://en.gravatar.com/site/implement/images/php/ "PHP Image Requests") to learn more
+- Note that the `N+1 query` problem occured as a result of our `$answer->user` redirection. From debug, we were able to trace it to `RouteServiceProvider.php`. 
+  - simply add `with('answers.user')` before where like this
+
+``` php
+        Route::bind('slug', function ($slug) {
+            return Question::with('answers.user')->where('slug', $slug)->firstOrFail();
+        });
+```

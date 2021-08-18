@@ -32,10 +32,13 @@ class Answer extends Model
         static::created(function ($answer) {
             $answer->question->increment('answers_count');
         });
-        
-
-
     }
+    
+    public function getCreatedDateAttribute()
+    {
+        return $this->created_at->diffForHumans();
+    }
+
 
 
 }
