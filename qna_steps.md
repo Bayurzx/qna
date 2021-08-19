@@ -322,3 +322,16 @@ Route::get('/questions/{slug}', [App\Http\Controllers\QuestionsController::class
             return Question::with('answers.user')->where('slug', $slug)->firstOrFail();
         });
 ```
+
+## Lesson 26. Adding Vote Controls on Question and Answer 
+- Worked on `show.blade.php`
+
+
+## Lesson 27. Adding Vote Controls on Question and Answer 
+- In the lesson, font-awesome was used for some designs.You can use...
+  - FontAwesome CDN
+  - Down fontawesome locally
+  - or you can use npm to install
+- I decided to use option 2 but will also use option 3
+- For option 2 simply add  `public/css/all.min.css` and `public/webfonts/`
+- 
