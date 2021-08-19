@@ -294,6 +294,8 @@ Route::get('/questions/{slug}', [App\Http\Controllers\QuestionsController::class
 
 - Rename the `answers` table to `answers_count`.
   - This is needed because...
+
+
   - Create a new migration with `php artisan make:migration rename_answers_in_questions_table --table=questions`
   - Add the following to the up function `$table->renameColumn('answers', 'answers_count');` to change the column name.
   - install `doctrine/dbal` with `composer require doctrine/dbal`
@@ -334,4 +336,53 @@ Route::get('/questions/{slug}', [App\Http\Controllers\QuestionsController::class
   - or you can use npm to install
 - I decided to use option 2 but will also use option 3
 - For option 2 simply add  `public/css/all.min.css` and `public/webfonts/`
-- 
+Decided not to use option 3 `unnecessarily complicated!!!`
+
+## Lesson 28. Adding Vote Controls on Question and Answer Part 2
+- Styling in `resources\sass\app.scss`
+- We added this
+
+``` scss
+.vote-controls {
+    min-width: 60px;
+    margin-right: 30px;
+    text-align: center;
+    color: $gray-700; // this is from node_modules bootstrap
+
+    span, a {
+        display: block;
+    }
+    span {
+        &.votes-count {
+            font-size: 25px;
+        }
+        &.favorites-count {
+            font-size: 12px;
+        }
+    }
+
+    a {
+        cursor: pointer;
+        color: $gray-600;
+
+        &.off, &.off:hover {
+            color: $gray-500;
+        } 
+        
+        &.favorite {
+            &.favorited, &.favorited:hover {
+                color: #e6c300;
+            } 
+        }
+
+        &.vote-accepted {
+            color: #63b47c;
+        }
+    }
+}
+```
+  - Note that this scss
+  - `&` represent parent property
+  - This will enable distinct selection of classes
+  - all variable property were either defined in `resources\sass\_variables.scss` or `node_modules bootstrap`
+  - we used `npm run watch` to allow laravel autimatically intepret the `scss` in `resources\sass\app.scss` to `css` in `public\css\app.css` 
