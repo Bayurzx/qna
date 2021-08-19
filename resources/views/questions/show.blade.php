@@ -22,6 +22,7 @@
                         </div>
                         <div class="media-body">
                             {!! $question->body_html !!}
+                            <i class="fa fa-caret-up">yoo</i>
                             <div class="float-right">
                                 <span class="text-muted">Answered {{ $question->created_date }} </span>
                                 <div class="media">
