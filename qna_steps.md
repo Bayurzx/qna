@@ -461,10 +461,40 @@ public function store(Question $question, Request $request)
 ## Lesson 35. Deleting The Answer - Part 2 (Best answer)
 - Since we want a copy of the best answer in our db
   - We save the answer's question as `$question`, in `app\Models\Answer.php`, then...
+``` php
+static::deleted(function ($answer)
+{
+    $question = $answer->question;
+    $question->decrement('answers_count');
+    if ($question->best_answer_id == $answer->id ) {
+        $question->best_answer_id = NULL;
+        $question->save();
+    }
+} );
+```
     - This is to compare it in a if statement
   - ... we save the `best_answer_id` as null
   - save the quesition in the DB
 
-## Lesson 36. Deleting The Answer - Part 3 (Using add_foreign_best_answer_to_question)
+## Lesson 36. Deleting The Answer - Part 3 (Using add_foreign_best_answer_to_question table)
 - Went back a previous commit and created a separate branch called `best_answer_id`
   - This doesn't contain the solution we had in part2
+- Created a new migration called `database\migrations\2021_08_20_172556_add_foreign_best_answer_to_question.php` and ran migration
+- Added our schema table as ...
+``` php
+Schema::table('questions', function (Blueprint $table) {
+    $table->foreign('best_answer_id')
+          ->references('id')
+          ->on('answers')
+          ->onDelete('SET NULL');
+});
+```
+- Note that the logic in `app\Models\Answer.php` is now
+``` php
+        static::deleted(function ($answer)
+        {
+            $answer->question->decrement('answers_count');
+        } );
+```
+- Now on deleting an answer, the best_answer_id property of questions is automatically changed to null from the DB itself
+

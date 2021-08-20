@@ -28,7 +28,7 @@ class Answer extends Model
         return Parsedown::instance()->text($this->body);
     }
 
-    public  static function boot()
+    public static function boot()
     {
         parent::boot();
 
@@ -38,12 +38,7 @@ class Answer extends Model
 
         static::deleted(function ($answer)
         {
-            $question = $answer->question;
-            $question->decrement('answers_count');
-            if ($question->best_answer_id == $answer->id ) {
-                $question->best_answer_id = NULL;
-                $question->save();
-            }
+            $answer->question->decrement('answers_count');
         } );
     }
     
