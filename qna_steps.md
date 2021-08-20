@@ -449,3 +449,7 @@ public function store(Question $question, Request $request)
 - Created `$fillable` variable for answers in `app\Models\Answer.php`
 
 ### Note: If the user is not logged in, it will return an unhandled error
+
+## Lesson 32. Updating The Answer 
+- Added edit and delete button
+- IMplemented it in AnswersCOntroller
