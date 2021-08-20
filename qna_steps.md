@@ -464,3 +464,7 @@ public function store(Question $question, Request $request)
     - This is to compare it in a if statement
   - ... we save the `best_answer_id` as null
   - save the quesition in the DB
+
+## Lesson 36. Deleting The Answer - Part 3 (Using add_foreign_best_answer_to_question)
+- Went back a previous commit and created a separate branch called `best_answer_id`
+  - This doesn't contain the solution we had in part2
