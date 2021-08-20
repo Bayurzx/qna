@@ -453,3 +453,14 @@ public function store(Question $question, Request $request)
 ## Lesson 32. Updating The Answer 
 - Added edit and delete button
 - IMplemented it in AnswersCOntroller
+
+## Lesson 34. Deleting The Answer 
+- Authorize answer delete and return success message in AnswerController
+- Go to `app\Models\Answer.php` to reduce answer count since it was deleted in `boot` method
+
+## Lesson 35. Deleting The Answer - Part 2 (Best answer)
+- Since we want a copy of the best answer in our db
+  - We save the answer's question as `$question`, in `app\Models\Answer.php`, then...
+    - This is to compare it in a if statement
+  - ... we save the `best_answer_id` as null
+  - save the quesition in the DB
