@@ -75,7 +75,7 @@ sudo mysql
  ```
   *Notice we used `resource` instead of `get` because we will be performing `CRUD` ops*
 
-- Create `QuestionsController` with `php artisan make:controller QuestionController --rersource --model=Question`
+- Create `QuestionsController` with `php artisan make:controller QuestionController --resource --model=Question`
 
   - If you open `QuestionsController` you will notice that all `CRUD` options were created because of the --resource flag and Question model was used.
     
@@ -386,3 +386,66 @@ Decided not to use option 3 `unnecessarily complicated!!!`
   - This will enable distinct selection of classes
   - all variable property were either defined in `resources\sass\_variables.scss` or `node_modules bootstrap`
   - we used `npm run watch` to allow laravel autimatically intepret the `scss` in `resources\sass\app.scss` to `css` in `public\css\app.css` 
+
+## Lesson 29. Saving The Answer 
+*If there are any files starting with `_` kindly note that they are part of a file*
+- Moved the answer part of `resources\views\questions\show.blade.php` to `resources\views\answers\_show.blade.php`
+  - Represented it as ...
+     ``` php
+         @include('answers._show', [
+        'answers' => $question->answers,
+        'answersCount' => $question->answers_count,
+    ])
+     ```
+     - Note that `answers` and `answersCount` replaced their associates as variables
+- Created a mini form for answers in `resources\views\answers\_create.blade.php` which is included in `resources\views\questions\show.blade.php`
+- Added the route in `routes\web.php` as...
+
+``` php
+Route::resource('questions.answers', AnswersController::class)->only('store', 'edit', 'update', 'destroy');
+```
+  - This created all 7 methods for answers `questions.answers` 
+```
++--------+-----------+--------------------------------------------+---------------------------+--------------------------------------------------+----------------------------------+
+| Domain | Method    | URI                                        | Name                      | Action
+                         | Middleware                       |
++--------+-----------+--------------------------------------------+---------------------------+--------------------------------------------------+----------------------------------+
+|        | GET|HEAD  | questions/{question}/answers               | questions.answers.index   | App\Http\Controllers\AnswersController@index     | web                              |
+|        | POST      | questions/{question}/answers               | questions.answers.store   | App\Http\Controllers\AnswersController@store     | web                              |
+|        | GET|HEAD  | questions/{question}/answers/create        | questions.answers.create  | App\Http\Controllers\AnswersController@create    | web                              |
+|        | GET|HEAD  | questions/{question}/answers/{answer}      | questions.answers.show    | App\Http\Controllers\AnswersController@show      | web                              |
+|        | PUT|PATCH | questions/{question}/answers/{answer}      | questions.answers.update  | App\Http\Controllers\AnswersController@update    | web                              |
+|        | DELETE    | questions/{question}/answers/{answer}      | questions.answers.destroy | App\Http\Controllers\AnswersController@destroy   | web                              |
+|        | GET|HEAD  | questions/{question}/answers/{answer}/edit | questions.answers.edit    | App\Http\Controllers\AnswersController@edit      | web                              |
++--------+-----------+--------------------------------------------+---------------------------+--------------------------------------------------+----------------------------------+
+```
+
+- Created an answer controller with `php artisan make:controller AnswersController -r -m Answer`
+  - -r :: Resource
+  - -m :: model(Answer)
+
+## Lesson 30. Saving The Answer - Part 2 
+- Created a form for answers and included it in show blade
+- Since we included question in the route, we will be including it as show below
+  
+``` php
+public function store(Question $question, Request $request)
+{
+    $request->validate([
+        'body' => 'required'
+    ]);
+
+    $question->answers()->create($request->validate(['body' => 'required']) + ['user_id' => Auth::id()]);
+
+    return back()->with('success', "Your answer has been submitted successfully");
+}
+```
+  - Notice that the ...
+    - answers was created through the question variable
+    - validate was passed as an argument in the create method and it was merged with the user_id validation with `Auth`
+    - the `back()` return user to the previous page
+
+## Lesson 30. Saving The Answer - Part 3
+- Created `$fillable` variable for answers in `app\Models\Answer.php`
+
+### Note: If the user is not logged in, it will return an unhandled error
