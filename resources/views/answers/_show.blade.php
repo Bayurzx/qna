@@ -20,7 +20,7 @@
                                 <a href="#" class="vote-down off" title="This answer is not useful">
                                     <i class="fa fa-caret-down fa-3x"></i>
                                 </a>
-                                <a href="" class="vote-accepted" title="Mark as best answer">
+                                <a href="" class="{{ $answer->status }}" title="Mark as best answer">
                                     <i class="fa fa-check fa-2x"></i>
                                     {{-- <span class="favorites-count">123</span> --}}
                                 </a>
