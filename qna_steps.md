@@ -498,3 +498,60 @@ Schema::table('questions', function (Blueprint $table) {
 ```
 - Now on deleting an answer, the best_answer_id property of questions is automatically changed to null from the DB itself
 
+## Lesson 37. Accepting the answer as best answer 
+- To mark best answer, we introduced `onclick` to `resources\views\answers\_show.blade.php` and added some `js` function
+- created a hidden form to enable us post accepted answer using a new defined route
+  - We used what is called a `Single Action Controller` which is a bit different since we didn't specify action name
+  - This controller uses the __invoke method and calls a method we will define in `app\Models\Question.php`
+- In `app\Models\Question.php`, we simply declare `best_answer_id` in the `acceptBestAnswer` method
+- Now we define a policy in `app\Policies\AnswerPolicy.php` that only allows if the user's id == answer's questions's user_id
+
+``` php
+    public function accept(User $user, Answer $answer)
+    {
+        return $user->id == $answer->question->user_id;
+    }
+```
+- We then go to `app\Models\Question.php` to create `acceptBestAnswer` method
+- We defined a can/else/if/endif html syntax to endsure that no only the loggedin user can see the accepted answer
+  
+``` php
+@can('accept', $answer)
+  <a href="" class="{{ $answer->status }}"
+      onclick="event.preventDefault(); document.getElementById('accept-answer-{{$answer->id }}').submit(); "
+      title="Mark as best answer">
+      <i class="fa fa-check fa-2x"></i>
+      {{-- <span class="favorites-count">123</span> --}}
+  </a>
+  <form action="{{route('answers.accept', $answer->id) }} " id="accept-answer-{{$answer->id }}"
+      method="POST" style="display: none;" >
+      @csrf
+  </form>
+  
+  @else
+      @if ($answer->is_best)                           
+          <a href="" class="{{ $answer->status }}"
+              title="Question owner accepted it as best answer">
+              <i class="fa fa-check fa-2x"></i>
+          </a>
+      @endif
+  @endcan                                 
+```
+  - Note that while `is_best` was used in the answer model isBest was actually used, it seems there is a naming standard to be used
+
+``` php 
+public function getStatusAttribute()
+{
+    return $this->isBest() ? 'vote-accepted' : '';
+}
+
+public function getIsBestAttribute()
+{
+    return $this->isBest();
+}
+
+public function isBest()
+{
+    return $this->id == $this->question->best_answer_id;
+}
+```

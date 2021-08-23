@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\QuestionsController;
 use App\Http\Controllers\AnswersController;
+use App\Http\Controllers\AcceptedAnswerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,3 +33,5 @@ Route::resource('questions.answers', AnswersController::class)->only('store', 'e
 
 Route::get('/questions/{slug}', [QuestionsController::class, 'show'])->name('questions.show');
 // Route::get('questions/{slug}', "QuestionsController@show")->name('questions.show');
+
+Route::post('/answers/{answer}/accept', AcceptedAnswerController::class)->name('answers.accept');
