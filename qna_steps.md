@@ -70,7 +70,7 @@ sudo mysql
 
 - Created new route in `routes\web.php`
 
-```
+``` php
  Route::resource('questions', QuestionsController::class);
  ```
   *Notice we used `resource` instead of `get` because we will be performing `CRUD` ops*
@@ -187,8 +187,8 @@ return view('questions.index', compact('questions'));
 Route::resource('questions', QuestionsController::class)->except('show');
 Route::get('/questions/{slug}', [App\Http\Controllers\QuestionsController::class, 'show'])->name('questions.show');
 ```
-- **Note:** that `Route::get('questions/{slug}', "QuestionsController@show")->name('questions.show');
-` wont work.
+  - **Note:** that `Route::get('questions/{slug}', "QuestionsController@show")->name('questions.show');` wont work.
+  - if you are using an action from the contoller class such as `'show'` you must place them in an array.
 
 - We need to define our own model binding resolution logic by adding `Route::bind` to `boot()` in `app\Providers\RouteServiceProvider.php`
   - Read about it here -> [Customizing The Resolution Logic](https://laravel.com/docs/8.x/routing#customizing-the-resolution-logic)
@@ -555,3 +555,63 @@ public function isBest()
     return $this->id == $this->question->best_answer_id;
 }
 ```
+
+## Lesson 39. Favoriting The Question 
+- created a migration `2021_08_23_221724_create_favorites_table` with `php artisan make:migration create_favorites_table`
+- in `database\migrations\2021_08_23_221724_create_favorites_table.php` we specify the table columns ['user_id', 'question_id', 'timestamps'] in favorites table and used unique to make sure they are alway unique ` $table->unique(['user_id', 'question_id']);`
+  - This is what they call constraints
+- ran the migration '`php artisan mugrate`'
+- create a favorites method in `app\Models\User.php` which indicates that the favorites table has a belongsTomany category.
+- we could specify the foreign keys that would be used in the method but was omitted since we have laravel working for us
+```php
+    public function favorites()
+    {
+        return $this->belongsToMany(User::class or Question::class, 'favorites'); //,'user_id', 'question_id');
+    }
+```
+  - This is in both user and question models `User::class or Question::class`
+
+- Test run on tinker
+``` php
+>>> $q1 = App\Models\Question::find(1) // create question 1
+>>> $q2 = App\Models\Question::find(2) // create question 2
+>>> $u1 = App\Models\User::find(1) // create user 1
+>>> $u2 = App\Models\User::find(2) // create user 2
+>>> $u3 = App\Models\User::find(3) // create user 3
+>>> $u1->favorites // indicate no favorites detected
+>>> $u1->favorites()->attach($q1->id) // attach favorite question 1 to user 1 
+>>> $u1->load('favorites') // reload to show favorited
+>>> $u1->favorites()->attach($q2) // attach favorite question 2 to user 1 (works both ways for obj or int or arrays containing int) 
+>>> $u1->load('favorites') // reload to show favorited
+>>> $u2->favorites()->attach([$q1->id, $q2->id]) // attach favorite question 2 to user 1 (works both ways for obj or int or arrays containing int) 
+>>> $q1->favorites()->attach($u3) // As you see it also works backwards thanks to belongsToMany method in both user and question
+>>> $u1->favorites()->detach($q2) // to detach or unfavorite a question
+>>> $u2->favorites()->detach([$q1->id, $q2->id]) // works for arrays too, return total items affected
+>>> $q1->favorites()->where('user_id', $u1->id)->count() > 0 // Check if question 1 has an favorite greater than 0 in column user_id with value of $u1->id
+=> true
+>>> $q2->favorites()->where('user_id', $u1->id)->count() > 0
+=> false
+```
+
+-  In Questions model we add 
+```php
+    public function isFavorited()
+    {
+        return $this->favorites()->where('user_id', auth()->id())->count() > 0; 
+    }
+```
+   - Notice that this is similar to `$q2->favorites()->where('user_id', $u1->id)->count() > 0`
+   - Where `$this` replaces the current question model
+   - `auth()->id()` replaces ` $u1->id` current user's id
+
+- Generate seeder for our new favorites table `php artisan make:seeder UsersQuestionsAnswersTableSeeder`
+  - Delete pre-existing table to prevent duplication error by calling `DB`'s delete method
+  - cut and paste factory seeder that was in `database\seeders\DatabaseSeeder.php` to its own class `database\seeders\UsersQuestionsAnswersTableSeeder.php`
+  - `database\seeders\FavoritesTableSeeder.php` logic count the number of people in user and randomly attach a user favorites' to a question
+  - Also import `FavoritesTableSeeder` into DatabaseSeeder
+- run `php artisan db:seed --class=FavoritesTableSeeder` to seed the db table
+- added timestamps to the table by adding the `->withTimestamps()` method to `belongsToMany` method in both `user` and `question` models
+- 
+
+## Lesson 42. Favoriting The Question (Favorite button)
+- 

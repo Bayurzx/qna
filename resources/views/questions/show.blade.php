@@ -22,10 +22,21 @@
                             <a href="#" class="vote-down off" title="This question is not useful">
                                 <i class="fa fa-caret-down fa-3x"></i>
                             </a>
-                            <a href="" class="favorite favorited" title="Click to ark as favorite question(Click again to undo)">
+                            <a href="" 
+                            onclick="event.preventDefault(); document.getElementById('favorite-question-{{$question->id }}').submit(); "
+                            class="favorite {{Auth::guest() ? 'off' : ($question->is_favorited ? 'favorited' : '') }}" title="Click to mark as favorite question(Click again to undo)">
+
                                 <i class="fa fa-star"></i>
-                                <span class="favorites-count">123</span>
+                                <span class="favorites-count">{{$question->favorites_count}}</span>
                             </a>
+                            <form action="/questions/{{$question->id}}/favorites " 
+                                id="favorite-question-{{$question->id }}"
+                                method="POST" style="display: none;" >
+                                @csrf
+                                @if ($question->is_favorited)
+                                    @method('DELETE')
+                                @endif
+                            </form>
                         </div>
                         <div class="media-body">
                             {!! $question->body_html !!}
